@@ -10,11 +10,13 @@ public class GraphController : MonoBehaviour
     public float height;
     public float depth;
     public int iteration;
+    public bool disableForceWhenDragging = false;
 
     private Graph graph;
     private float area;
     private float k; // optimal distance between vertices
     private float temperature; // limits the total displacement
+    private float coolingRate = 0.9f; // from book: graph algorithms and applications 4, liotta ..., page = 263
 
     public void Start()
     {
@@ -86,8 +88,7 @@ public class GraphController : MonoBehaviour
     {
         if (count > iteration) 
             return;
-        
-            
+
         UpdateGraph();
         count++;
     }
@@ -122,14 +123,12 @@ public class GraphController : MonoBehaviour
             float zPos = Mathf.Min(depth / 2, Mathf.Max(-depth / 2, v.transform.position.z));
             v.transform.position = new Vector3(xPos, yPos, zPos);
         }
-        graph.UpdateEdges();
         temperature = Cool(temperature);
+        graph.UpdateEdges();
     }
 
     private float Cool(float temp)
     {
-        // from book: graph algorithms and applications 4, liotta ..., page = 263
-        float coolingRate = 0.9f;
         temp = temp * coolingRate;
         return temp;
     }
@@ -144,10 +143,14 @@ public class GraphController : MonoBehaviour
     {
         nodeObject.transform.position = curPosition;
 
-        // elasticity when draging
-        //if (temperature < 0.0001f)
-        //    temperature = width / 10;
-        //UpdateGraph();
+        if (!disableForceWhenDragging) {
+            // elasticity when draging
+            if (temperature < 0.0001f)
+                temperature = width / 10;
+            UpdateGraph();
+        }
+        else
+            graph.UpdateEdges();
     }
 
 }

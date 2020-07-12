@@ -58,7 +58,7 @@ namespace graph {
             lineRenderer.endWidth = 0.1f;
             lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
             lineRenderer.startColor = Color.white;
-            lineRenderer.endColor = Color.black;
+            lineRenderer.endColor = Color.white;
             lineRenderer.SetPosition(0, start.transform.position);
             lineRenderer.SetPosition(1, end.transform.position);
 

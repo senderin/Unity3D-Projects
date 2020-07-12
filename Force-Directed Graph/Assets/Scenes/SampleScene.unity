@@ -150,10 +150,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b5cde531f4494617a0185ecca0fbdbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 10
-  height: 10
+  width: 20
+  height: 20
   depth: 10
-  iteration: 50
+  iteration: 1000
 --- !u!4 &171771781
 Transform:
   m_ObjectHideFlags: 0
