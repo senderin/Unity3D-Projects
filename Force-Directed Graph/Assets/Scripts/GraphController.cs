@@ -21,7 +21,8 @@ public class GraphController : MonoBehaviour
         area = GetArea();
         CreateGraph();
         k = Mathf.Sqrt(area / graph.vertices.Count);
-        UpdateGraph();
+        temperature = width / 10;
+        // temperature = k;
     }
 
     private void CreateGraph() {
@@ -72,7 +73,7 @@ public class GraphController : MonoBehaviour
 
     private float CalculateRepulsiveForce(float distance)
     {
-        return k * k / distance;
+        return (k * k / distance);
     }
 
     private float CalculateAttractiveForce(float distance)
@@ -80,48 +81,56 @@ public class GraphController : MonoBehaviour
         return distance * distance / k;
     }
 
-    internal void UpdateGraph() {
-        temperature = width / 10;
+    int count = 0;
+    private void Update()
+    {
+        if (count > iteration) 
+            return;
+        
+            
+        UpdateGraph();
+        count++;
+    }
 
-        for(int i = 0; i < iteration; i++) {
-            // calculate repulsive forces
-            foreach (Vertex v in graph.vertices)
+    internal void UpdateGraph() {
+        foreach (Vertex v in graph.vertices)
+        {
+            v.displacement = Vector3.zero;
+            foreach (Vertex u in graph.vertices)
             {
-                v.displacement = Vector3.zero;
-                foreach (Vertex u in graph.vertices)
-                {
-                    if(u != v) {
-                        Vector3 delta = v.transform.position - u.transform.position;
-                        v.displacement = v.displacement + (delta / delta.magnitude) * CalculateRepulsiveForce(delta.magnitude);
-                    }
+                if(u != v) {
+                    Vector3 delta = v.transform.position - u.transform.position;
+                    v.displacement = v.displacement + (delta / delta.magnitude) * CalculateRepulsiveForce(delta.magnitude);
                 }
             }
-
-            // calculate attractive forces
-            foreach(Edge e in graph.edges) {
-                Vector3 delta = e.startVertex.transform.position - e.endVertex.transform.position;
-                e.startVertex.displacement = e.startVertex.displacement - (delta / delta.magnitude) * CalculateAttractiveForce(delta.magnitude);
-                e.endVertex.displacement = e.endVertex.displacement + (delta / delta.magnitude) * CalculateAttractiveForce(delta.magnitude);
-            }
-
-            foreach(Vertex v in graph.vertices) {
-                // limit the maximum displacement to the temperature t
-                v.transform.position = v.transform.position + (v.displacement / v.displacement.magnitude) * Mathf.Min(v.displacement.magnitude, temperature);
-                // prevent from being displaced outside frame
-                float xPos = Mathf.Min(width / 2, Mathf.Max(-width / 2, v.transform.position.x));
-                float yPos = Mathf.Min(height / 2, Mathf.Max(-height / 2, v.transform.position.y));
-                float zPos = Mathf.Min(depth / 2, Mathf.Max(-depth / 2, v.transform.position.z));
-                v.transform.position = new Vector3(xPos, yPos, zPos);
-            }
-            // reduce the temperature for better layout configuration
-            temperature = Cool(temperature);
-            graph.UpdateEdges();
         }
+
+        // calculate attractive forces
+        foreach(Edge e in graph.edges) {
+            Vector3 delta = e.startVertex.transform.position - e.endVertex.transform.position;
+            e.startVertex.displacement = e.startVertex.displacement - (delta / delta.magnitude) * CalculateAttractiveForce(delta.magnitude);
+            e.endVertex.displacement = e.endVertex.displacement + (delta / delta.magnitude) * CalculateAttractiveForce(delta.magnitude);
+        }
+
+        foreach(Vertex v in graph.vertices) {
+            // limit the maximum displacement to the temperature t
+            v.transform.position = v.transform.position + (v.displacement / v.displacement.magnitude) * Mathf.Min(v.displacement.magnitude, temperature);
+            Debug.Log(Mathf.Min(v.displacement.magnitude, temperature));
+            // prevent from being displaced outside frame
+            float xPos = Mathf.Min(width / 2, Mathf.Max(-width / 2, v.transform.position.x));
+            float yPos = Mathf.Min(height / 2, Mathf.Max(-height / 2, v.transform.position.y));
+            float zPos = Mathf.Min(depth / 2, Mathf.Max(-depth / 2, v.transform.position.z));
+            v.transform.position = new Vector3(xPos, yPos, zPos);
+        }
+        graph.UpdateEdges();
+        temperature = Cool(temperature);
     }
 
     private float Cool(float temp)
     {
-        temp = temp * 0.95f;
+        // from book: graph algorithms and applications 4, liotta ..., page = 263
+        float coolingRate = 0.9f;
+        temp = temp * coolingRate;
         return temp;
     }
 
@@ -134,7 +143,11 @@ public class GraphController : MonoBehaviour
     internal void UpdateVertexPosition(GameObject nodeObject, Vector3 curPosition)
     {
         nodeObject.transform.position = curPosition;
-        graph.UpdateEdges();
+
+        // elasticity when draging
+        //if (temperature < 0.0001f)
+        //    temperature = width / 10;
+        //UpdateGraph();
     }
 
 }
