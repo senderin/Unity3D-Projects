@@ -10,6 +10,8 @@ public class GraphController : MonoBehaviour
     public float height;
     public float depth;
     public int iteration;
+    public string fileName;
+
     public bool disableForceWhenDragging = false;
 
     private Graph graph;
@@ -21,51 +23,10 @@ public class GraphController : MonoBehaviour
     public void Start()
     {
         area = GetArea();
-        CreateGraph();
+        graph = CreateGraph();
         k = Mathf.Sqrt(area / graph.vertices.Count);
         temperature = width / 10;
         // temperature = k;
-    }
-
-    private void CreateGraph() {
-        graph = new Graph();
-        Vertex a = graph.AddVertex("a", GetRandomPosition());
-        Vertex b = graph.AddVertex("b", GetRandomPosition());
-        Vertex c = graph.AddVertex("c", GetRandomPosition());
-        Vertex d = graph.AddVertex("d", GetRandomPosition());
-        Vertex e = graph.AddVertex("e", GetRandomPosition());
-        Vertex f = graph.AddVertex("f", GetRandomPosition());
-        Vertex g = graph.AddVertex("g", GetRandomPosition());
-        Vertex h = graph.AddVertex("h", GetRandomPosition());
-        Vertex i = graph.AddVertex("i", GetRandomPosition());
-        Vertex j = graph.AddVertex("j", GetRandomPosition());
-        Vertex k = graph.AddVertex("k", GetRandomPosition());
-        Vertex l = graph.AddVertex("l", GetRandomPosition());
-        graph.AddEdge(a, b, "a_b");
-        graph.AddEdge(a, c, "a_c");
-        graph.AddEdge(b, c, "b_c");
-        graph.AddEdge(b, d, "b_d");
-        graph.AddEdge(d, c, "d_c");
-        graph.AddEdge(d, e, "d_e");
-        graph.AddEdge(d, f, "d_f");
-        graph.AddEdge(k, b, "k_b");
-        graph.AddEdge(j, c, "j_c");
-        graph.AddEdge(h, c, "h_c");
-        graph.AddEdge(g, d, "g_d");
-        graph.AddEdge(l, c, "l_c");
-        graph.AddEdge(f, e, "f_e");
-        graph.AddEdge(i, f, "i_f");
-        graph.AddEdge(a, e, "a_e");
-        graph.AddEdge(a, f, "a_f");
-        graph.AddEdge(b, g, "b_g");
-        graph.AddEdge(b, h, "b_h");
-        graph.AddEdge(d, i, "d_i");
-        graph.AddEdge(d, j, "d_j");
-        graph.AddEdge(d, k, "d_k");
-        graph.AddEdge(k, l, "k_l");
-        graph.AddEdge(j, d, "j_d");
-        graph.AddEdge(h, e, "h_e");
-        graph.AddEdge(g, f, "g_f");
     }
 
     private float GetArea()
@@ -116,7 +77,6 @@ public class GraphController : MonoBehaviour
         foreach(Vertex v in graph.vertices) {
             // limit the maximum displacement to the temperature t
             v.transform.position = v.transform.position + (v.displacement / v.displacement.magnitude) * Mathf.Min(v.displacement.magnitude, temperature);
-            Debug.Log(Mathf.Min(v.displacement.magnitude, temperature));
             // prevent from being displaced outside frame
             float xPos = Mathf.Min(width / 2, Mathf.Max(-width / 2, v.transform.position.x));
             float yPos = Mathf.Min(height / 2, Mathf.Max(-height / 2, v.transform.position.y));
@@ -152,5 +112,44 @@ public class GraphController : MonoBehaviour
         else
             graph.UpdateEdges();
     }
+
+    private Graph CreateGraph()
+    {
+        bool isLoaded = FileOperations.LoadFile(fileName, true);
+        Graph gr = new Graph();
+        GameObject graphObject = new GameObject();
+        graphObject.name = "ProteinInteractionNetwork";
+        int lineCount = 0;
+        if (isLoaded)
+        {
+            List<string> lines = FileOperations.GetLines();
+            foreach (String line in lines)
+            {
+                if (lineCount > 100)
+                    break;
+                string[] tokens = line.Split(' ');
+                Vertex vertex1 = CreateVertex(tokens[0], gr);
+                Vertex vertex2 = CreateVertex(tokens[1], gr);
+                Edge edge = gr.AddEdge(vertex1, vertex2, vertex1.name + "_" + vertex2.name);
+                vertex1.transform.SetParent(graphObject.transform);
+                vertex2.transform.SetParent(graphObject.transform);
+                edge.transform.SetParent(graphObject.transform);
+                lineCount++;
+                Debug.Log("Loaded %" + (lineCount * (100 / lines.Count)).ToString());
+            }
+        }
+        return gr;
+    }
+
+    private Vertex CreateVertex(string name, Graph gr)
+    {
+        Vertex vertex;
+        if (!gr.HasVertex(name))
+            vertex = gr.AddVertex(name, GetRandomPosition());
+        else
+            vertex = gr.GetVertex(name);
+        return vertex;
+    }
+
 
 }

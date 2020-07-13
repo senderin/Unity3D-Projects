@@ -30,6 +30,13 @@ namespace graph {
             return vertices.Find(x => x.name == name);
         }
 
+        public bool HasVertex(string name) {
+            Vertex vertex = GetVertex(name);
+            if (vertex != null)
+                return true;
+            return false;
+        }
+
         public Vertex RemoveVertex(string name)
         {
             Vertex vertex = GetVertex(name);

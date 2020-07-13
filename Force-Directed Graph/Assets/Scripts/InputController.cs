@@ -9,8 +9,8 @@ public enum Operation {
 public class InputController : MonoBehaviour
 {
     [Range(1f, 30f)]
-    public float speed;
-    public float rotationSpeed;
+    public float speed = 10f;
+    public float rotationSpeed = 50f;
     [Range(1f, 20f)]
     public float rotationSensitivity = 10f;
     public float minFOV = 1f;
@@ -91,10 +91,11 @@ public class InputController : MonoBehaviour
 
     private void ZoomInOut()
     {
-        float fov = Camera.main.fieldOfView;
+        /* float fov = Camera.main.fieldOfView;
         fov += Input.GetAxis("Mouse ScrollWheel") * rotationSensitivity;
         fov = Mathf.Clamp(fov, minFOV, maxFOV);
-        Camera.main.fieldOfView = fov;
+        Camera.main.fieldOfView = fov;  */
+        transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + Input.GetAxis("Mouse ScrollWheel") * rotationSensitivity);
     }
 
     private void MoveXY()

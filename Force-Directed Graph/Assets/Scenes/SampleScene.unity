@@ -150,10 +150,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b5cde531f4494617a0185ecca0fbdbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 20
-  height: 20
-  depth: 10
+  width: 100
+  height: 100
+  depth: 100
   iteration: 1000
+  fileName: Assets/940282.protein.links.v11.0.txt
+  disableForceWhenDragging: 0
 --- !u!4 &171771781
 Transform:
   m_ObjectHideFlags: 0
@@ -358,7 +360,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  rotationSpeed: 250
+  rotationSpeed: 50
   rotationSensitivity: 10
   minFOV: 1
   maxFOV: 179
