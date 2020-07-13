@@ -125,8 +125,8 @@ public class GraphController : MonoBehaviour
             List<string> lines = FileOperations.GetLines();
             foreach (String line in lines)
             {
-                if (lineCount > 100)
-                    break;
+                if (lineCount > 500)
+                   break;
                 string[] tokens = line.Split(' ');
                 Vertex vertex1 = CreateVertex(tokens[0], gr);
                 Vertex vertex2 = CreateVertex(tokens[1], gr);

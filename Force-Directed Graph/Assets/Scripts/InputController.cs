@@ -13,8 +13,6 @@ public class InputController : MonoBehaviour
     public float rotationSpeed = 50f;
     [Range(1f, 20f)]
     public float rotationSensitivity = 10f;
-    public float minFOV = 1f;
-    public float maxFOV = 179f;
     [Range(1f, 20f)]
     public float sensitivity = 10f;
 
@@ -30,14 +28,15 @@ public class InputController : MonoBehaviour
         MoveXY();
         ZoomInOut();
 
-        // left mouse click --> rotate around clicked node
+        // left mouse click --> rotate
         if (Input.GetMouseButtonDown(0))
         {
-            nodeObject = FindAt(Input.mousePosition);
-            if (nodeObject != null)
-                isRotate = true;
-            else
-                isRotate = false;
+            isRotate = true;
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            isRotate = false;
         }
 
         if (isRotate)
@@ -80,21 +79,20 @@ public class InputController : MonoBehaviour
 
     private void Rotate()
     {
-        transform.RotateAround(nodeObject.transform.position,
+        GameObject network = GameObject.Find("ProteinInteractionNetwork");
+        transform.RotateAround(network.transform.position,
                                         transform.up,
                                         -Input.GetAxis("Mouse X") * rotationSpeed * rotationSensitivity * Time.deltaTime);
 
-        transform.RotateAround(nodeObject.transform.position,
+        transform.RotateAround(network.transform.position,
                                         transform.right,
                                         -Input.GetAxis("Mouse Y") * rotationSpeed * rotationSensitivity * Time.deltaTime);
+
+
     }
 
     private void ZoomInOut()
     {
-        /* float fov = Camera.main.fieldOfView;
-        fov += Input.GetAxis("Mouse ScrollWheel") * rotationSensitivity;
-        fov = Mathf.Clamp(fov, minFOV, maxFOV);
-        Camera.main.fieldOfView = fov;  */
         transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + Input.GetAxis("Mouse ScrollWheel") * rotationSensitivity);
     }
 

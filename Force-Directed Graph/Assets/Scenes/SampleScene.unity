@@ -362,7 +362,5 @@ MonoBehaviour:
   speed: 10
   rotationSpeed: 50
   rotationSensitivity: 10
-  minFOV: 1
-  maxFOV: 179
   sensitivity: 10
   nodeObject: {fileID: 0}
