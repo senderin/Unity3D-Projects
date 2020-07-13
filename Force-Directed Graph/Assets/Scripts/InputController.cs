@@ -50,6 +50,7 @@ public class InputController : MonoBehaviour
             if (nodeObject != null)
             {
                 isDrag = true;
+                nodeObject.GetComponent<Renderer>().material.color = Color.red;
                 screenSpace = Camera.main.WorldToScreenPoint(nodeObject.transform.position);
                 offset = nodeObject.transform.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z));
             }
@@ -60,8 +61,7 @@ public class InputController : MonoBehaviour
         if (Input.GetMouseButtonUp(1) && nodeObject != null)
         {
             isDrag = false;
-            // ????
-            // FindObjectOfType<GraphController>().UpdateGraph();
+            nodeObject.GetComponent<Renderer>().material.color = Color.white;
         }
 
         if (isDrag)

@@ -120,12 +120,13 @@ public class GraphController : MonoBehaviour
         GameObject graphObject = new GameObject();
         graphObject.name = "ProteinInteractionNetwork";
         int lineCount = 0;
+        int nodeLimit = 500;
         if (isLoaded)
         {
             List<string> lines = FileOperations.GetLines();
             foreach (String line in lines)
             {
-                if (lineCount > 500)
+                if (lineCount > nodeLimit)
                    break;
                 string[] tokens = line.Split(' ');
                 Vertex vertex1 = CreateVertex(tokens[0], gr);
@@ -135,7 +136,7 @@ public class GraphController : MonoBehaviour
                 vertex2.transform.SetParent(graphObject.transform);
                 edge.transform.SetParent(graphObject.transform);
                 lineCount++;
-                Debug.Log("Loaded %" + (lineCount * (100 / lines.Count)).ToString());
+                Debug.Log("Loaded %" + (lineCount * (100f / nodeLimit)).ToString());
             }
         }
         return gr;
