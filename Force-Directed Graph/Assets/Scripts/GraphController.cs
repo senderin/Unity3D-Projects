@@ -3,6 +3,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using graph;
 using System;
+using System.Diagnostics;
 
 public class GraphController : MonoBehaviour
 {
@@ -11,8 +12,10 @@ public class GraphController : MonoBehaviour
     public float depth;
     public int iteration;
     public string fileName;
-
     public bool disableForceWhenDragging = false;
+
+    [Header("Debug")]
+    public int nodeLimit = 100;
 
     private Graph graph;
     private float area;
@@ -22,6 +25,7 @@ public class GraphController : MonoBehaviour
 
     public void Start()
     {
+        sw.Start();
         area = GetArea();
         graph = CreateGraph();
         k = Mathf.Sqrt(area / graph.vertices.Count);
@@ -45,13 +49,18 @@ public class GraphController : MonoBehaviour
     }
 
     int count = 0;
+    Stopwatch sw = new Stopwatch();
     private void Update()
     {
-        if (count > iteration) 
+        if (count > iteration && sw.IsRunning) {
+            sw.Stop();
+            UnityEngine.Debug.Log(sw.Elapsed);
             return;
-
-        UpdateGraph();
-        count++;
+        }
+        else if(sw.IsRunning) {
+            UpdateGraph();
+            count++;
+        }
     }
 
     internal void UpdateGraph() {
@@ -120,7 +129,6 @@ public class GraphController : MonoBehaviour
         GameObject graphObject = new GameObject();
         graphObject.name = "ProteinInteractionNetwork";
         int lineCount = 0;
-        int nodeLimit = 500;
         if (isLoaded)
         {
             List<string> lines = FileOperations.GetLines();
@@ -136,7 +144,7 @@ public class GraphController : MonoBehaviour
                 vertex2.transform.SetParent(graphObject.transform);
                 edge.transform.SetParent(graphObject.transform);
                 lineCount++;
-                Debug.Log("Loaded %" + (lineCount * (100f / nodeLimit)).ToString());
+                // UnityEngine.Debug.Log("Loaded %" + (lineCount * (100f / nodeLimit)).ToString());
             }
         }
         return gr;
